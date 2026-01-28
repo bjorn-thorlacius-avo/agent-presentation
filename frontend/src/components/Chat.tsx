@@ -42,21 +42,40 @@ const Chat: React.FC<ChatProps> = ({ onSendMessage, initialMessages = [] }) => {
     setInputValue('')
     setIsLoading(true)
 
-    // Simulate agent response
-    setTimeout(() => {
+    try {
+      const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'
+      const response = await fetch(`${baseUrl}/api/agent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage.text })
+      })
+
+      if (!response.ok) {
+        throw new Error(`Request failed (${response.status})`)
+      }
+
+      const data = (await response.json()) as { reply?: string }
       const agentMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: `I received your message: "${userMessage.text}". This is a simulated agent response.`,
+        text: data.reply || 'No response received from agent.',
         sender: 'agent',
         timestamp: new Date()
       }
       setMessages(prev => [...prev, agentMessage])
-      setIsLoading(false)
-      
       if (onSendMessage) {
         onSendMessage(userMessage.text)
       }
-    }, 800)
+    } catch (error) {
+      const agentMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Sorry, the agent is unavailable right now.',
+        sender: 'agent',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, agentMessage])
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
