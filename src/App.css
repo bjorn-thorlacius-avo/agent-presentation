@@ -1,0 +1,103 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #1a3a2e;
+  background: linear-gradient(135deg, #1a3a2e 0%, #0f2924 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.presentation-container {
+  width: 90vw;
+  height: 72vh;
+  max-width: 1280px;
+  max-height: 1024px;
+  min-width: 800px;
+  min-height: 600px;
+  background: #ffffff;
+  border-radius: 1.5vw;
+  box-shadow: 0 2vh 4vh -1vh rgba(0, 0, 0, 0.25), 
+              0 1vh 2vh -0.5vh rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.slide {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6vh 4vw;
+  text-align: center;
+  position: relative;
+}
+
+.slide-title {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 800;
+  color: #1a3a2e;
+  margin-bottom: 3vh;
+  line-height: 1.1;
+  background: linear-gradient(135deg, #1a3a2e 0%, #2d5a4a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.slide-subtitle {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-weight: 400;
+  color: #4a5568;
+  line-height: 1.4;
+  max-width: 70vw;
+  opacity: 0.8;
+}
+
+.slide-gradient-accent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20vw;
+  height: 25vh;
+  background: linear-gradient(135deg, rgba(26, 58, 46, 0.05) 0%, rgba(45, 90, 74, 0.1) 100%);
+  border-radius: 50%;
+  transform: translate(7vw, -12vh);
+  z-index: 0;
+}
+
+.slide-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Animation for smooth entrance */
+.slide-title {
+  animation: slideInUp 0.8s ease-out;
+}
+
+.slide-subtitle {
+  animation: slideInUp 0.8s ease-out 0.2s both;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(3vh);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
