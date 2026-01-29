@@ -126,6 +126,59 @@ body {
   animation: slide-toast-in 0.35s ease forwards;
 }
 
+.slide-topic-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+}
+
+.slide-topic-chat .chat-container {
+  flex: 1;
+  min-height: 0;
+}
+
+.slide-topic-panel {
+  width: 100%;
+  padding: 1.4vh 1.6vw;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  text-align: left;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.slide-topic-title {
+  font-weight: 700;
+  color: #1a3a2e;
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  margin-bottom: 0.6vh;
+}
+
+.slide-topic-empty {
+  color: #64748b;
+  font-size: clamp(0.85rem, 1.1vw, 0.98rem);
+}
+
+.slide-topic-list {
+  list-style: disc;
+  padding-left: 1.2rem;
+  color: #1f2937;
+  display: grid;
+  gap: 0.4rem;
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
+}
+
+.slide-topic-item-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.2rem;
+}
+
+.slide-topic-item-summary {
+  color: #4b5563;
+  font-size: clamp(0.8rem, 1.05vw, 0.95rem);
+}
+
 @keyframes slide-toast-in {
   from {
     transform: translateX(-120%);

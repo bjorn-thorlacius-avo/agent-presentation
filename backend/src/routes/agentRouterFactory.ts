@@ -36,7 +36,7 @@ export const createAgentRouter = (resolveAgent: AgentResolver) => {
       const reply = await runWithSessionContext(
         {
           sessionId,
-          response: agentId === 'slide-4' ? res : undefined
+          response: agentId === 'slide-4' || agentId === 'slide-5' ? res : undefined
         },
         async () => {
         appendSessionMessage(sessionId, { role: 'user', content: message });

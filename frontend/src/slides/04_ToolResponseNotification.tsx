@@ -62,7 +62,7 @@ const ToolResponseNotificationChat = () => {
 
 const ToolResponseNotificationSlide: SlideDefinition = {
   title: 'Tool-driven responses',
-  subtitle: 'Technique 2: respond inside the tool',
+  subtitle: 'Technique 2: Respond inside the tool',
   content: <ToolResponseNotificationChat />,
   rightContent: (
     <div className="slide-right-content">

@@ -10,6 +10,13 @@ const MAX_MESSAGES = 12;
 const sessions = new Map<string, ChatMessage[]>();
 const MAX_TOOL_CALLS = 30;
 const toolCalls = new Map<string, ToolCall[]>();
+const docsSearched = new Map<string, boolean>();
+type SessionTopic = {
+  title: string;
+  summary: string;
+};
+
+const sessionTopics = new Map<string, SessionTopic[]>();
 type SessionContext = {
   sessionId: string;
   response?: Response;
@@ -63,6 +70,28 @@ export const updateSessionToolCall = (
     call.id === callId ? { ...call, ...updates } : call
   );
   toolCalls.set(sessionId, updated);
+};
+
+export const markDocumentationSearched = (sessionId: string) => {
+  docsSearched.set(sessionId, true);
+};
+
+export const hasDocumentationSearched = (sessionId: string) => {
+  return docsSearched.get(sessionId) ?? false;
+};
+
+export const addSessionTopic = (
+  sessionId: string,
+  topic: SessionTopic
+) => {
+  const existing = sessionTopics.get(sessionId) ?? [];
+  const updated = [...existing, topic];
+  sessionTopics.set(sessionId, updated);
+  return updated;
+};
+
+export const getSessionTopics = (sessionId: string) => {
+  return sessionTopics.get(sessionId) ?? [];
 };
 
 export const runWithSessionContext = <T>(

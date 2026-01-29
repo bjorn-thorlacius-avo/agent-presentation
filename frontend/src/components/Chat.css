@@ -106,6 +106,30 @@
   font-size: clamp(0.8rem, 1.1vw, 0.95rem);
 }
 
+.chat-tooltip {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  min-width: min(90vw, 520px);
+  max-width: min(90vw, 520px);
+  max-height: 40vh;
+  overflow: auto;
+  padding: 1vh 1vw;
+  background: #111827;
+  color: #e2e8f0;
+  border-radius: 12px;
+  font-size: clamp(0.75rem, 1vw, 0.9rem);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
+  z-index: 999;
+  text-align: left;
+  pointer-events: none;
+}
+
+.chat-tooltip pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .chat-message-bubble p {
   margin: 0;
   font-size: clamp(0.9rem, 1.3vw, 1rem);

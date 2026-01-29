@@ -15,6 +15,9 @@ interface ToolCall {
   status: 'started' | 'completed' | 'failed'
   startedAt: string
   endedAt?: string
+  input?: unknown
+  output?: unknown
+  error?: string
 }
 
 interface ToolCallMessage {
@@ -22,11 +25,19 @@ interface ToolCallMessage {
   text: string
   status: ToolCall['status']
   timestamp: Date
+  details?: string
 }
 
 interface NotificationPayload {
   title?: string
   message: string
+}
+
+interface TopicsPayload {
+  topics: Array<{
+    title: string
+    summary: string
+  }>
 }
 
 interface ChatProps {
@@ -38,6 +49,7 @@ interface ChatProps {
   onMessagesChange?: (messages: Message[]) => void
   showToolCalls?: boolean
   onNotification?: (notification: NotificationPayload) => void
+  onTopicsChange?: (topics: TopicsPayload['topics']) => void
 }
 
 const Chat: React.FC<ChatProps> = ({
@@ -48,12 +60,17 @@ const Chat: React.FC<ChatProps> = ({
   sessionId,
   onMessagesChange,
   showToolCalls = true,
-  onNotification
+  onNotification,
+  onTopicsChange
 }) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [toolCallMessages, setToolCallMessages] = useState<ToolCallMessage[]>([])
+  const [toolTooltip, setToolTooltip] = useState<{
+    details: string
+    rect: DOMRect
+  } | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const sessionIdRef = useRef(
@@ -102,13 +119,34 @@ const Chat: React.FC<ChatProps> = ({
         const data = (await response.json()) as { toolCalls?: ToolCall[] }
         if (isActive) {
           const calls = data.toolCalls ?? []
+          const formatValue = (value: unknown) => {
+            try {
+              return JSON.stringify(value, null, 2)
+            } catch {
+              return String(value)
+            }
+          }
+
           const mapped = calls
-            .map((call) => ({
-              id: call.id,
-              status: call.status,
-              timestamp: new Date(call.startedAt),
-              text: `Tool call: ${call.name} (${call.status})`
-            }))
+            .map((call) => {
+              const details: string[] = []
+              if (call.input !== undefined) {
+                details.push(`input:\n${formatValue(call.input)}`)
+              }
+              if (call.output !== undefined) {
+                details.push(`output:\n${formatValue(call.output)}`)
+              }
+              if (call.error) {
+                details.push(`error:\n${call.error}`)
+              }
+              return {
+                id: call.id,
+                status: call.status,
+                timestamp: new Date(call.startedAt),
+                text: `Tool call: ${call.name} (${call.status})`,
+                details: details.length > 0 ? details.join('\n\n') : undefined
+              }
+            })
             .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
           setToolCallMessages(mapped)
         }
@@ -159,9 +197,13 @@ const Chat: React.FC<ChatProps> = ({
       const data = (await response.json()) as {
         reply?: string
         notification?: NotificationPayload
+        topics?: TopicsPayload['topics']
       }
       if (data.notification && onNotification) {
         onNotification(data.notification)
+      }
+      if (data.topics && onTopicsChange) {
+        onTopicsChange(data.topics)
       }
       const agentMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -191,6 +233,18 @@ const Chat: React.FC<ChatProps> = ({
       e.preventDefault()
       handleSend()
     }
+  }
+
+  const handleToolEnter = (
+    event: React.MouseEvent<HTMLDivElement>,
+    details: string
+  ) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    setToolTooltip({ details, rect })
+  }
+
+  const handleToolLeave = () => {
+    setToolTooltip(null)
   }
 
   return (
@@ -228,7 +282,13 @@ const Chat: React.FC<ChatProps> = ({
 
               return (
                 <div key={message.id} className="chat-message chat-message-tool">
-                  <div className="chat-message-bubble">
+                  <div
+                    className="chat-message-bubble"
+                    onMouseEnter={(event) =>
+                      message.details && handleToolEnter(event, message.details)
+                    }
+                    onMouseLeave={handleToolLeave}
+                  >
                     <p>{message.text}</p>
                   </div>
                 </div>
@@ -248,6 +308,17 @@ const Chat: React.FC<ChatProps> = ({
         )}
         <div ref={messagesEndRef} />
       </div>
+      {toolTooltip && (
+        <div
+          className="chat-tooltip"
+          style={{
+            left: toolTooltip.rect.left + toolTooltip.rect.width / 2,
+            top: toolTooltip.rect.top - 8
+          }}
+        >
+          <pre>{toolTooltip.details}</pre>
+        </div>
+      )}
       <div className="chat-input-container">
         <input
           ref={inputRef}
