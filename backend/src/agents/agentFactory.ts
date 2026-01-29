@@ -1,6 +1,6 @@
 import { createAgent } from 'langchain';
 import { ChatVertexAI } from '@langchain/google-vertexai';
-import { DEFAULT_SYSTEM_PROMPT, DEFAULT_TOOLS } from './agentDefaults';
+import { SLIDE_02_SYSTEM_PROMPT, SLIDE_02_TOOLS } from './slide02Agents';
 
 let cachedAgent: ReturnType<typeof createAgent> | null = null;
 
@@ -27,8 +27,8 @@ const buildAgent = (overrides: Partial<AgentOverrides> = {}) => {
 
   return createAgent({
     model: llm,
-    tools: overrides.tools ?? DEFAULT_TOOLS,
-    systemPrompt: overrides.systemPrompt ?? DEFAULT_SYSTEM_PROMPT
+    tools: overrides.tools ?? SLIDE_02_TOOLS,
+    systemPrompt: overrides.systemPrompt ?? SLIDE_02_SYSTEM_PROMPT
   });
 };
 
