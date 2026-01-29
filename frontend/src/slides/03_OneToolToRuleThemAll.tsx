@@ -124,6 +124,14 @@ const OneToolToRuleThemAllSlide: SlideDefinition = {
           <li>Report an error if invalid</li>
         </ol>
       </div>
+      <br />
+      <div>
+        <p className="slide-right-lead"><strong>Try this Example</strong></p>
+        <br />
+        <p className="slide-right-caption">
+          Insert a record with title "Hi", summary "Too short", and no tags
+        </p>
+      </div>
     </div>
   ),
   splitLayout: true

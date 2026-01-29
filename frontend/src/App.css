@@ -243,7 +243,7 @@ body {
   margin-top: 2vh;
   display: flex;
   flex-direction: column;
-  gap: 1.5vh;
+  gap: 2vh;
 }
 
 .slide-right-lead {
@@ -275,6 +275,14 @@ body {
   color: #1a3a2e;
   font-weight: 700;
 }
+
+.slide-right-caption {
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  color: #2d3748;
+  line-height: 1.4;
+  font-style: italic;
+}
+
 
 /* Slide Navigation */
 .slide-navigation {
