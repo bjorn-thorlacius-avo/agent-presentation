@@ -32,7 +32,7 @@ const buildAgent = (overrides: Partial<AgentOverrides> = {}) => {
   });
 };
 
-export const getAgent = () => {
+export const getAgent = (): ReturnType<typeof createAgent> => {
   if (!cachedAgent) {
     cachedAgent = buildAgent();
   }

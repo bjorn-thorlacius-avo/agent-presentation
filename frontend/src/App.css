@@ -99,6 +99,87 @@ body {
   flex: 1;
 }
 
+.slide-agent-picker {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2vh;
+  padding: 2vh 2vw;
+  text-align: center;
+}
+
+.slide-agent-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+}
+
+.slide-agent-button {
+  padding: 0.7vh 1.4vw;
+  border-radius: 999px;
+  border: 2px solid #1a3a2e;
+  background: #ffffff;
+  color: #1a3a2e;
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.slide-agent-button:hover {
+  background: #1a3a2e;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 58, 46, 0.2);
+}
+
+.slide-agent-switch {
+  position: absolute;
+  top: 1.2vh;
+  left: 20%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1vh;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.slide-agent-switch-button {
+  padding: 0.8vh 1.6vw;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  color: #1a3a2e;
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  pointer-events: auto;
+}
+
+.slide-agent-switch-button:hover {
+  border-color: #1a3a2e;
+  color: #1a3a2e;
+  transform: translateY(-1px);
+}
+
+.slide-agent-switch-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+  padding: 1.5vh 1.5vw;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  pointer-events: auto;
+}
+
+.slide-chat-wrapper {
+  position: relative;
+}
+
 /* Split Layout */
 .slide-split {
   flex-direction: row;

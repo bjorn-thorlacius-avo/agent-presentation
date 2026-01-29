@@ -75,6 +75,7 @@
   padding: 1.2vh 1.5vw;
   border-radius: 18px;
   word-wrap: break-word;
+  overflow-wrap: anywhere;
   line-height: 1.5;
 }
 
@@ -95,6 +96,17 @@
 .chat-message-bubble p {
   margin: 0;
   font-size: clamp(0.9rem, 1.3vw, 1rem);
+}
+
+.chat-message-bubble code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-message-bubble pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .chat-message-loading {

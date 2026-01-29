@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { marked } from 'marked'
 import './Chat.css'
 
-interface Message {
+export interface Message {
   id: string
   text: string
   sender: 'user' | 'agent'
@@ -12,18 +12,30 @@ interface Message {
 interface ChatProps {
   onSendMessage?: (message: string) => void
   initialMessages?: Message[]
+  apiPath?: string
+  agentId?: string
+  sessionId?: string
+  onMessagesChange?: (messages: Message[]) => void
 }
 
-const Chat: React.FC<ChatProps> = ({ onSendMessage, initialMessages = [] }) => {
+const Chat: React.FC<ChatProps> = ({
+  onSendMessage,
+  initialMessages = [],
+  apiPath = '/api/agent',
+  agentId,
+  sessionId,
+  onMessagesChange
+}) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const sessionIdRef = useRef(
-    typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random().toString(16).slice(2)}`
+    sessionId
+      ?? (typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`)
   )
 
   const scrollToBottom = () => {
@@ -32,6 +44,18 @@ const Chat: React.FC<ChatProps> = ({ onSendMessage, initialMessages = [] }) => {
 
   useEffect(() => {
     scrollToBottom()
+  }, [messages])
+
+  const onMessagesChangeRef = useRef<typeof onMessagesChange>(onMessagesChange)
+
+  useEffect(() => {
+    onMessagesChangeRef.current = onMessagesChange
+  }, [onMessagesChange])
+
+  useEffect(() => {
+    if (onMessagesChangeRef.current) {
+      onMessagesChangeRef.current(messages)
+    }
   }, [messages])
 
   const handleSend = async () => {
@@ -50,12 +74,13 @@ const Chat: React.FC<ChatProps> = ({ onSendMessage, initialMessages = [] }) => {
 
     try {
       const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'
-      const response = await fetch(`${baseUrl}/api/agent`, {
+      const response = await fetch(`${baseUrl}${apiPath}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage.text,
-          sessionId: sessionIdRef.current
+          sessionId: sessionIdRef.current,
+          agentId
         })
       })
 
