@@ -17,6 +17,7 @@
   flex-direction: column;
   gap: 1.5vh;
   scroll-behavior: smooth;
+  text-align: left;
 }
 
 .chat-messages::-webkit-scrollbar {

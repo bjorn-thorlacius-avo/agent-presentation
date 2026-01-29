@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Slide from './components/Slide'
 import Chat from './components/Chat'
 import './App.css'

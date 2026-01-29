@@ -19,6 +19,11 @@ const Chat: React.FC<ChatProps> = ({ onSendMessage, initialMessages = [] }) => {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const sessionIdRef = useRef(
+    typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(16).slice(2)}`
+  )
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -47,7 +52,10 @@ const Chat: React.FC<ChatProps> = ({ onSendMessage, initialMessages = [] }) => {
       const response = await fetch(`${baseUrl}/api/agent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage.text })
+        body: JSON.stringify({
+          message: userMessage.text,
+          sessionId: sessionIdRef.current
+        })
       })
 
       if (!response.ok) {
