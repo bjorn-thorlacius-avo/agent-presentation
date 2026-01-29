@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { marked } from 'marked'
 import './Chat.css'
 
@@ -52,7 +52,11 @@ interface ChatProps {
   onTopicsChange?: (topics: TopicsPayload['topics']) => void
 }
 
-const Chat: React.FC<ChatProps> = ({
+export type ChatHandle = {
+  sendMessage: (message: string, options?: { context?: Record<string, unknown> }) => void
+}
+
+const Chat = forwardRef<ChatHandle, ChatProps>(({
   onSendMessage,
   initialMessages = [],
   apiPath = '/api/agent',
@@ -62,7 +66,7 @@ const Chat: React.FC<ChatProps> = ({
   showToolCalls = true,
   onNotification,
   onTopicsChange
-}) => {
+}, ref) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -164,18 +168,24 @@ const Chat: React.FC<ChatProps> = ({
     }
   }, [apiPath, showToolCalls])
 
-  const handleSend = async () => {
-    if (!inputValue.trim() || isLoading) return
+  const handleSend = async (
+    messageOverride?: string,
+    options?: { context?: Record<string, unknown> }
+  ) => {
+    const messageText = (messageOverride ?? inputValue).trim()
+    if (!messageText || isLoading) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: inputValue.trim(),
+      text: messageText,
       sender: 'user',
       timestamp: new Date()
     }
 
     setMessages(prev => [...prev, userMessage])
-    setInputValue('')
+    if (!messageOverride) {
+      setInputValue('')
+    }
     setIsLoading(true)
 
     try {
@@ -186,7 +196,8 @@ const Chat: React.FC<ChatProps> = ({
         body: JSON.stringify({
           message: userMessage.text,
           sessionId: sessionIdRef.current,
-          agentId
+          agentId,
+          context: options?.context
         })
       })
 
@@ -246,6 +257,12 @@ const Chat: React.FC<ChatProps> = ({
   const handleToolLeave = () => {
     setToolTooltip(null)
   }
+
+  useImperativeHandle(ref, () => ({
+    sendMessage: (message: string, options?: { context?: Record<string, unknown> }) => {
+      handleSend(message, options)
+    }
+  }))
 
   return (
     <div className="chat-container">
@@ -332,7 +349,7 @@ const Chat: React.FC<ChatProps> = ({
         />
         <button
           className="chat-send-button"
-          onClick={handleSend}
+          onClick={() => handleSend()}
           disabled={!inputValue.trim() || isLoading}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -343,6 +360,6 @@ const Chat: React.FC<ChatProps> = ({
       </div>
     </div>
   )
-}
+})
 
 export default Chat

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { createAgent } from 'langchain';
+import { createBaseAgent } from '../agents/agentFactory';
 import {
   appendSessionMessage,
   getSessionMessages,
@@ -12,6 +13,12 @@ type AgentRequestBody = {
   message?: string;
   sessionId?: string;
   agentId?: string;
+  context?: {
+    topic?: {
+      title?: string;
+      info?: string;
+    };
+  };
 };
 
 type AgentResolver = (agentId?: string) => ReturnType<typeof createAgent>;
@@ -19,24 +26,48 @@ type AgentResolver = (agentId?: string) => ReturnType<typeof createAgent>;
 export const createAgentRouter = (resolveAgent: AgentResolver) => {
   const router = Router();
 
+  const buildSlide06Prompt = (topic?: { title?: string; info?: string }) => {
+    const title = topic?.title?.trim() || 'Untitled topic';
+    const info = topic?.info?.trim() || 'No additional context provided.';
+    return [
+      'You are a concise assistant.',
+      'Use the provided topic context without calling any tools to fetch it.',
+      'Summarize the topic in bullet points.',
+      '',
+      `Topic title: ${title}`,
+      `Topic info: ${info}`
+    ].join('\n');
+  };
+
   router.post('/', async (req: Request<{}, {}, AgentRequestBody>, res: Response) => {
     const message = req.body?.message?.trim();
     const sessionId = req.body?.sessionId?.trim();
     const agentId = req.body?.agentId?.trim();
+    const topicContext = req.body?.context?.topic;
     if (!message || !sessionId) {
       res.status(400).json({ error: 'Message and sessionId are required.' });
       return;
     }
 
     try {
-      const agent = resolveAgent(agentId);
+      const agent =
+        agentId === 'slide-6' && topicContext
+          ? createBaseAgent({
+            systemPrompt: buildSlide06Prompt(topicContext),
+            tools: []
+          })
+          : resolveAgent(agentId);
       console.log('Agent request received:', {
         messageLength: message.length
       });
       const reply = await runWithSessionContext(
         {
           sessionId,
-          response: agentId === 'slide-4' || agentId === 'slide-5' ? res : undefined
+          response:
+            agentId === 'slide-4'
+            || agentId === 'slide-5'
+              ? res
+              : undefined
         },
         async () => {
         appendSessionMessage(sessionId, { role: 'user', content: message });
