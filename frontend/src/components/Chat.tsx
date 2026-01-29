@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { marked } from 'marked'
 import './Chat.css'
 
 interface Message {
@@ -106,9 +107,16 @@ const Chat: React.FC<ChatProps> = ({ onSendMessage, initialMessages = [] }) => {
               key={message.id}
               className={`chat-message ${message.sender === 'user' ? 'chat-message-user' : 'chat-message-agent'}`}
             >
-              <div className="chat-message-bubble">
-                <p>{message.text}</p>
-              </div>
+              {message.sender === 'agent' ? (
+                <div
+                  className="chat-message-bubble"
+                  dangerouslySetInnerHTML={{ __html: marked.parse(message.text) }}
+                />
+              ) : (
+                <div className="chat-message-bubble">
+                  <p>{message.text}</p>
+                </div>
+              )}
             </div>
           ))
         )}
