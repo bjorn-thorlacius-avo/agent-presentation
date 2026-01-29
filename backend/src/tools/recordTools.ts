@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createTrackedTool } from './baseTool';
 
-type MockRecord = {
+type RecordEntry = {
   id: string;
   title: string;
   summary: string;
@@ -9,13 +9,13 @@ type MockRecord = {
   updatedAt: string;
 };
 
-const MOCK_RECORDS = new Map<string, MockRecord>();
+const RECORDS = new Map<string, RecordEntry>();
 
 const generateId = () => {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     return crypto.randomUUID();
   }
-  return `mock-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  return `record-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
 const updateRecord = (payload: {
@@ -25,19 +25,19 @@ const updateRecord = (payload: {
   tags: string[];
 }) => {
   const id = payload.id?.trim() || generateId();
-  const record: MockRecord = {
+  const record: RecordEntry = {
     id,
     title: payload.title,
     summary: payload.summary,
     tags: payload.tags,
     updatedAt: new Date().toISOString()
   };
-  MOCK_RECORDS.set(id, record);
+  RECORDS.set(id, record);
   return record;
 };
 
 const validateRecord = (id: string) => {
-  const record = MOCK_RECORDS.get(id);
+  const record = RECORDS.get(id);
   const errors: string[] = [];
 
   if (!record) {
@@ -62,7 +62,7 @@ const validateRecord = (id: string) => {
   };
 };
 
-export const updateMockRecordTool = createTrackedTool(
+export const updateRecordTool = createTrackedTool(
   async (payload: { id?: string; title: string; summary: string; tags: string[] }) => {
     await new Promise((resolve) => setTimeout(resolve, 400));
     const record = updateRecord(payload);
@@ -72,8 +72,8 @@ export const updateMockRecordTool = createTrackedTool(
     });
   },
   {
-    name: 'update_mock_record',
-    description: 'Updates a mock database record and returns its id.',
+    name: 'update_record',
+    description: 'Updates a database record and returns its id.',
     schema: z.object({
       id: z.string().optional().describe('Optional id to update an existing record'),
       title: z.string().describe('Title for the record'),
@@ -83,17 +83,17 @@ export const updateMockRecordTool = createTrackedTool(
   }
 );
 
-export const validateMockRecordTool = createTrackedTool(
+export const validateRecordTool = createTrackedTool(
   async ({ id }: { id: string }) => {
     await new Promise((resolve) => setTimeout(resolve, 300));
     const result = validateRecord(id);
     return JSON.stringify(result);
   },
   {
-    name: 'validate_mock_record',
-    description: 'Validates a mock database record using its id.',
+    name: 'validate_record',
+    description: 'Validates a database record using its id.',
     schema: z.object({
-      id: z.string().describe('Id returned from update_mock_record')
+      id: z.string().describe('Id returned from update_record')
     })
   }
 );
@@ -112,8 +112,8 @@ export const updateAndValidateRecordTool = createTrackedTool(
     });
   },
   {
-    name: 'update_and_validate_record',
-    description: 'Updates a mock record, validates it, and reports validation errors.',
+    name: 'update_record',
+    description: 'Updates a database record.',
     schema: z.object({
       id: z.string().optional().describe('Optional id to update an existing record'),
       title: z.string().describe('Title for the record'),

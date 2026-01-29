@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createTrackedTool } from './baseTool';
 
-const MOCK_RECORDS = [
+const RECORDS = [
   {
     id: 'agent-001',
     title: 'LangChain Intro',
@@ -17,16 +17,16 @@ const MOCK_RECORDS = [
   {
     id: 'agent-003',
     title: 'Tooling Patterns',
-    summary: 'Examples of mock tools with simulated latency.',
-    tags: ['tools', 'latency', 'mock']
+    summary: 'Examples of tool usage with simulated latency.',
+    tags: ['tools', 'latency', 'demo']
   }
 ];
 
-export const mockSearchTool = createTrackedTool(
-  async ({ query, numberOfResults }: { query: string, numberOfResults: number }) => {
+export const recordSearchTool = createTrackedTool(
+  async ({ query, numberOfResults }: { query: string; numberOfResults: number }) => {
     await new Promise((resolve) => setTimeout(resolve, 650));
     const normalized = query.toLowerCase();
-    const matches = MOCK_RECORDS.filter((record) => {
+    const matches = RECORDS.filter((record) => {
       return (
         record.title.toLowerCase().includes(normalized) ||
         record.summary.toLowerCase().includes(normalized) ||
@@ -47,11 +47,11 @@ export const mockSearchTool = createTrackedTool(
     });
   },
   {
-    name: 'mock_search',
-    description: 'Searches a mock database with a small delay.',
+    name: 'record_search',
+    description: 'Searches the record database with a small delay.',
     schema: z.object({
-      query: z.string().describe('Search query for the mock database'),
-      numberOfResults: z.number().describe('Number of results to return'),
+      query: z.string().describe('Search query for the record database'),
+      numberOfResults: z.number().describe('Number of results to return')
     })
   }
 );

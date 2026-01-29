@@ -52,7 +52,7 @@ const OneToolChatPanel = () => {
   }
 
   return (
-    <div className="slide-chat-wrapper">
+    <div className="slide-chat-wrapper slide-agent-switch-top">
       <div className="slide-agent-switch">
         <button
           className="slide-agent-switch-button"
