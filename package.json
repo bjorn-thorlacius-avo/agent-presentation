@@ -1,0 +1,18 @@
+{
+  "name": "agent-presentation",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Agent presentation monorepo",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "pnpm@9.14.2",
+  "engines": {
+    "node": ">=18"
+  }
+}
