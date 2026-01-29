@@ -1,8 +1,10 @@
 import type { SlideDefinition } from './types'
-import MinimalToolChatSlide from './MinimalToolChatSlide'
+import Intro from './01_Intro'
+import BaseAgentSetup from './02_BaseAgentSetup'
 
-const slidesAfterIntro: SlideDefinition[] = [
-  MinimalToolChatSlide
+const slides: SlideDefinition[] = [
+  Intro,
+  BaseAgentSetup
 ]
 
-export default slidesAfterIntro
+export default slides

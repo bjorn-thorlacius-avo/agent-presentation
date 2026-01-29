@@ -4,10 +4,11 @@ interface SlideProps {
   title: string
   subtitle?: string
   children?: React.ReactNode
+  rightContent?: React.ReactNode
   splitLayout?: boolean
 }
 
-const Slide: React.FC<SlideProps> = ({ title, subtitle, children, splitLayout = false }) => {
+const Slide: React.FC<SlideProps> = ({ title, subtitle, children, rightContent, splitLayout = false }) => {
   if (splitLayout) {
     return (
       <div className="slide slide-split">
@@ -18,6 +19,7 @@ const Slide: React.FC<SlideProps> = ({ title, subtitle, children, splitLayout = 
         <div className="slide-right">
           <h1 className="slide-title">{title}</h1>
           {subtitle && <p className="slide-subtitle">{subtitle}</p>}
+          {rightContent}
         </div>
       </div>
     )

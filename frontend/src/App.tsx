@@ -1,20 +1,10 @@
 import { useState } from 'react'
 import Slide from './components/Slide'
-import slidesAfterIntro from './slides'
-import type { SlideDefinition } from './slides/types'
+import slides from './slides'
 import './App.css'
 
 function App() {
   const [currentSlide, setCurrentSlide] = useState(0)
-
-  const slides: SlideDefinition[] = [
-    {
-      title: "Mastering AI Agents",
-      subtitle: "4 Minimal Tool Techniques for Powerful Autonomous Systems",
-      content: null
-    },
-    ...slidesAfterIntro
-  ]
 
   const handleNext = () => {
     if (currentSlide < slides.length - 1) {
@@ -36,6 +26,7 @@ function App() {
         title={currentSlideData.title}
         subtitle={currentSlideData.subtitle}
         splitLayout={currentSlideData.splitLayout}
+        rightContent={currentSlideData.rightContent}
       >
         {currentSlideData.content}
       </Slide>
