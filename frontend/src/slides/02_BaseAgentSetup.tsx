@@ -16,6 +16,7 @@ const BaseAgentSetupSlide: SlideDefinition = {
         <li><strong>Gemini</strong> as the default model for fast iteration</li>
         <li><strong>Zod</strong> schemas to validate tool inputs</li>
         <li><strong>In-memory conversation history</strong> on the server</li>
+        <li><strong>Markdown formatting</strong> on agent responses</li>
       </ul>
     </div>
   ),
