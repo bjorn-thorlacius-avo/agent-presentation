@@ -1,10 +1,13 @@
 import { createAgent } from 'langchain';
 import { ChatVertexAI } from '@langchain/google-vertexai';
-import { mockSearchTool } from '../tools/mockSearch';
+import { DEFAULT_SYSTEM_PROMPT, DEFAULT_TOOLS } from './agentDefaults';
 
 let cachedAgent: ReturnType<typeof createAgent> | null = null;
 
-const buildAgent = () => {
+type AgentOptions = Parameters<typeof createAgent>[0];
+type AgentOverrides = Pick<AgentOptions, 'tools' | 'systemPrompt'>;
+
+const buildAgent = (overrides: Partial<AgentOverrides> = {}) => {
   const missingEnv: string[] = [];
   if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
     missingEnv.push('GOOGLE_APPLICATION_CREDENTIALS');
@@ -24,9 +27,8 @@ const buildAgent = () => {
 
   return createAgent({
     model: llm,
-    tools: [mockSearchTool],
-    systemPrompt:
-      'You are a helpful agent. Use the mock_search tool to look up info when relevant.'
+    tools: overrides.tools ?? DEFAULT_TOOLS,
+    systemPrompt: overrides.systemPrompt ?? DEFAULT_SYSTEM_PROMPT
   });
 };
 
@@ -36,3 +38,6 @@ export const getAgent = () => {
   }
   return cachedAgent;
 };
+
+export const createBaseAgent = (overrides: Partial<AgentOverrides> = {}) =>
+  buildAgent(overrides);
