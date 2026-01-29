@@ -1,4 +1,5 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
+import type { Response } from 'express';
 
 type ChatMessage = {
   role: 'user' | 'assistant';
@@ -9,7 +10,12 @@ const MAX_MESSAGES = 12;
 const sessions = new Map<string, ChatMessage[]>();
 const MAX_TOOL_CALLS = 30;
 const toolCalls = new Map<string, ToolCall[]>();
-const sessionContext = new AsyncLocalStorage<{ sessionId: string }>();
+type SessionContext = {
+  sessionId: string;
+  response?: Response;
+};
+
+const sessionContext = new AsyncLocalStorage<SessionContext>();
 
 type ToolCallStatus = 'started' | 'completed' | 'failed';
 
@@ -59,8 +65,13 @@ export const updateSessionToolCall = (
   toolCalls.set(sessionId, updated);
 };
 
-export const runWithSessionContext = <T>(sessionId: string, fn: () => T) => {
-  return sessionContext.run({ sessionId }, fn);
+export const runWithSessionContext = <T>(
+  context: SessionContext,
+  fn: () => T
+) => {
+  return sessionContext.run(context, fn);
 };
 
 export const getCurrentSessionId = () => sessionContext.getStore()?.sessionId;
+
+export const getCurrentResponse = () => sessionContext.getStore()?.response;

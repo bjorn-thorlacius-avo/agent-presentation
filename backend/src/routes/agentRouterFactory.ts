@@ -22,32 +22,43 @@ export const createAgentRouter = (resolveAgent: AgentResolver) => {
   router.post('/', async (req: Request<{}, {}, AgentRequestBody>, res: Response) => {
     const message = req.body?.message?.trim();
     const sessionId = req.body?.sessionId?.trim();
+    const agentId = req.body?.agentId?.trim();
     if (!message || !sessionId) {
       res.status(400).json({ error: 'Message and sessionId are required.' });
       return;
     }
 
     try {
-      const agent = resolveAgent(req.body?.agentId);
+      const agent = resolveAgent(agentId);
       console.log('Agent request received:', {
         messageLength: message.length
       });
-      const reply = await runWithSessionContext(sessionId, async () => {
+      const reply = await runWithSessionContext(
+        {
+          sessionId,
+          response: agentId === 'slide-4' ? res : undefined
+        },
+        async () => {
         appendSessionMessage(sessionId, { role: 'user', content: message });
         const history = getSessionMessages(sessionId);
         const result = await agent.invoke({ messages: history });
         const reply = extractReply(result) || 'No response generated.';
         appendSessionMessage(sessionId, { role: 'assistant', content: reply });
         return reply;
-      });
+        }
+      );
       console.log('Agent response ready:', {
         replyLength: reply.length
       });
-      res.json({ reply });
+      if (!res.headersSent) {
+        res.json({ reply });
+      }
     } catch (error) {
       const message =
         error instanceof Error ? error.message : 'Unexpected agent error.';
-      res.status(500).json({ error: message });
+      if (!res.headersSent) {
+        res.status(500).json({ error: message });
+      }
     }
   });
 

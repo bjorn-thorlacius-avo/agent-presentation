@@ -24,6 +24,11 @@ interface ToolCallMessage {
   timestamp: Date
 }
 
+interface NotificationPayload {
+  title?: string
+  message: string
+}
+
 interface ChatProps {
   onSendMessage?: (message: string) => void
   initialMessages?: Message[]
@@ -32,6 +37,7 @@ interface ChatProps {
   sessionId?: string
   onMessagesChange?: (messages: Message[]) => void
   showToolCalls?: boolean
+  onNotification?: (notification: NotificationPayload) => void
 }
 
 const Chat: React.FC<ChatProps> = ({
@@ -41,7 +47,8 @@ const Chat: React.FC<ChatProps> = ({
   agentId,
   sessionId,
   onMessagesChange,
-  showToolCalls = true
+  showToolCalls = true,
+  onNotification
 }) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [inputValue, setInputValue] = useState('')
@@ -149,7 +156,13 @@ const Chat: React.FC<ChatProps> = ({
         throw new Error(`Request failed (${response.status})`)
       }
 
-      const data = (await response.json()) as { reply?: string }
+      const data = (await response.json()) as {
+        reply?: string
+        notification?: NotificationPayload
+      }
+      if (data.notification && onNotification) {
+        onNotification(data.notification)
+      }
       const agentMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: data.reply || 'No response received from agent.',

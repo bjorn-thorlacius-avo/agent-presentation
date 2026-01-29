@@ -99,6 +99,55 @@ body {
   flex: 1;
 }
 
+.slide-toast-chat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.slide-toast-chat .chat-container {
+  flex: 1;
+  min-height: 0;
+}
+
+.slide-toast {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: min(70%, 520px);
+  padding: 1vh 1.8vw;
+  border-radius: 14px;
+  background: #1a3a2e;
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+  text-align: left;
+  z-index: 3;
+  transform: translateX(-120%);
+  animation: slide-toast-in 0.35s ease forwards;
+}
+
+@keyframes slide-toast-in {
+  from {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-toast-title {
+  font-weight: 700;
+  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+  margin-bottom: 0.4vh;
+}
+
+.slide-toast-message {
+  font-size: clamp(0.85rem, 1.1vw, 0.98rem);
+  opacity: 0.9;
+}
+
 .slide-agent-switch-top {
   display: flex;
   flex-direction: column;
@@ -243,7 +292,7 @@ body {
   margin-top: 2vh;
   display: flex;
   flex-direction: column;
-  gap: 2vh;
+  gap: 1vh;
 }
 
 .slide-right-lead {
@@ -257,7 +306,7 @@ body {
   padding-left: 1.8rem;
   color: #2d3748;
   font-size: clamp(1.05rem, 2.1vw, 1.45rem);
-  line-height: 1.6;
+  line-height: 1.3;
   display: flex;
   flex-direction: column;
   gap: 1.2vh;

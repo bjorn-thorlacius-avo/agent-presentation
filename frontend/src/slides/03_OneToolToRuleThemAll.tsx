@@ -124,11 +124,12 @@ const OneToolToRuleThemAllSlide: SlideDefinition = {
           <li>Report an error if invalid</li>
         </ol>
       </div>
+      <br />
       <div>
-        <p className="slide-right-lead"><strong>Try this example message</strong></p>
+        <p className="slide-right-lead"><strong>Try this message</strong></p>
         <br />
         <p className="slide-right-caption">
-          Insert a record with title "Hi", summary "Too short", and no tags
+          Insert a record with title "Hi", summary "Hello", and no tags
         </p>
       </div>
     </div>

@@ -4,7 +4,7 @@ import {
   createSlide03OneToolAgent,
   createSlide03TwoToolAgent
 } from './slide03Agents';
-import { createSlide04PlaceholderAgent } from './slide04Agents';
+import { createSlide04NotificationAgent } from './slide04Agents';
 
 let cachedTwoToolAgent: ReturnType<typeof createAgent> | null = null;
 let cachedOneToolAgent: ReturnType<typeof createAgent> | null = null;
@@ -24,7 +24,7 @@ export const getSlideAgent = (
     return agent;
   }
   if (agentId === 'slide-4') {
-    const agent = cachedSlide04Agent ?? createSlide04PlaceholderAgent();
+    const agent = cachedSlide04Agent ?? createSlide04NotificationAgent();
     cachedSlide04Agent = agent;
     return agent;
   }
