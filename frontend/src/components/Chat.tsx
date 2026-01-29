@@ -17,6 +17,13 @@ interface ToolCall {
   endedAt?: string
 }
 
+interface ToolCallMessage {
+  id: string
+  text: string
+  status: ToolCall['status']
+  timestamp: Date
+}
+
 interface ChatProps {
   onSendMessage?: (message: string) => void
   initialMessages?: Message[]
@@ -39,7 +46,7 @@ const Chat: React.FC<ChatProps> = ({
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [toolCalls, setToolCalls] = useState<ToolCall[]>([])
+  const [toolCallMessages, setToolCallMessages] = useState<ToolCallMessage[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const sessionIdRef = useRef(
@@ -87,7 +94,16 @@ const Chat: React.FC<ChatProps> = ({
         }
         const data = (await response.json()) as { toolCalls?: ToolCall[] }
         if (isActive) {
-          setToolCalls(data.toolCalls ?? [])
+          const calls = data.toolCalls ?? []
+          const mapped = calls
+            .map((call) => ({
+              id: call.id,
+              status: call.status,
+              timestamp: new Date(call.startedAt),
+              text: `Tool call: ${call.name} (${call.status})`
+            }))
+            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+          setToolCallMessages(mapped)
         }
       } catch (error) {
         // Ignore polling failures to avoid noisy UI.
@@ -167,28 +183,44 @@ const Chat: React.FC<ChatProps> = ({
   return (
     <div className="chat-container">
       <div className="chat-messages">
-        {messages.length === 0 ? (
+        {[...messages, ...toolCallMessages]
+          .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+          .length === 0 ? (
           <div className="chat-empty-state">
             <p>Start a conversation with the AI agent...</p>
           </div>
         ) : (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className={`chat-message ${message.sender === 'user' ? 'chat-message-user' : 'chat-message-agent'}`}
-            >
-              {message.sender === 'agent' ? (
-                <div
-                  className="chat-message-bubble"
-                  dangerouslySetInnerHTML={{ __html: marked.parse(message.text) }}
-                />
-              ) : (
-                <div className="chat-message-bubble">
-                  <p>{message.text}</p>
+          [...messages, ...toolCallMessages]
+            .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+            .map((message) => {
+              if ('sender' in message) {
+                return (
+                  <div
+                    key={message.id}
+                    className={`chat-message ${message.sender === 'user' ? 'chat-message-user' : 'chat-message-agent'}`}
+                  >
+                    {message.sender === 'agent' ? (
+                      <div
+                        className="chat-message-bubble"
+                        dangerouslySetInnerHTML={{ __html: marked.parse(message.text) }}
+                      />
+                    ) : (
+                      <div className="chat-message-bubble">
+                        <p>{message.text}</p>
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+
+              return (
+                <div key={message.id} className="chat-message chat-message-tool">
+                  <div className="chat-message-bubble">
+                    <p>{message.text}</p>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))
+              )
+            })
         )}
         {isLoading && (
           <div className="chat-message chat-message-agent">
@@ -203,29 +235,6 @@ const Chat: React.FC<ChatProps> = ({
         )}
         <div ref={messagesEndRef} />
       </div>
-      {showToolCalls && (
-        <div className="chat-tool-calls">
-          <div className="chat-tool-calls-header">
-            <span>Tool calls</span>
-            <span className="chat-tool-calls-live">Live</span>
-          </div>
-          {toolCalls.length === 0 ? (
-            <div className="chat-tool-calls-empty">No tool calls yet.</div>
-          ) : (
-            <ul className="chat-tool-calls-list">
-              {toolCalls.slice(-6).reverse().map((call) => (
-                <li
-                  key={call.id}
-                  className={`chat-tool-call chat-tool-call-${call.status}`}
-                >
-                  <span className="chat-tool-call-name">{call.name}</span>
-                  <span className="chat-tool-call-status">{call.status}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
       <div className="chat-input-container">
         <input
           ref={inputRef}
