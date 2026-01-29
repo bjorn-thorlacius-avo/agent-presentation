@@ -23,7 +23,7 @@ const MOCK_RECORDS = [
 ];
 
 export const mockSearchTool = tool(
-  async ({ query }: { query: string }) => {
+  async ({ query, numberOfResults }: { query: string, numberOfResults: number }) => {
     await new Promise((resolve) => setTimeout(resolve, 650));
     const normalized = query.toLowerCase();
     const matches = MOCK_RECORDS.filter((record) => {
@@ -32,7 +32,7 @@ export const mockSearchTool = tool(
         record.summary.toLowerCase().includes(normalized) ||
         record.tags.some((tag) => tag.toLowerCase().includes(normalized))
       );
-    });
+    }).slice(0, numberOfResults);
 
     if (matches.length === 0) {
       return JSON.stringify({ results: [], note: 'No matches found.' });
@@ -50,7 +50,8 @@ export const mockSearchTool = tool(
     name: 'mock_search',
     description: 'Searches a mock database with a small delay.',
     schema: z.object({
-      query: z.string().describe('Search query for the mock database')
+      query: z.string().describe('Search query for the mock database'),
+      numberOfResults: z.number().describe('Number of results to return'),
     })
   }
 );

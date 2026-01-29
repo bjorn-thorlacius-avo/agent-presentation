@@ -1,27 +1,19 @@
 import { useState } from 'react'
 import Slide from './components/Slide'
-import Chat from './components/Chat'
+import slidesAfterIntro from './slides'
+import type { SlideDefinition } from './slides/types'
 import './App.css'
 
 function App() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
-  const slides = [
+  const slides: SlideDefinition[] = [
     {
       title: "Mastering AI Agents",
       subtitle: "4 Minimal Tool Techniques for Powerful Autonomous Systems",
       content: null
     },
-    {
-      title: "Minimal Tool #1: Chat Interface",
-      subtitle: "A simple, reusable chat component for agent interactions",
-      content: (
-        <div className="slide-chat-wrapper">
-          <Chat />
-        </div>
-      ),
-      splitLayout: true
-    }
+    ...slidesAfterIntro
   ]
 
   const handleNext = () => {
