@@ -1,5 +1,5 @@
-import { tool } from 'langchain';
 import { z } from 'zod';
+import { createTrackedTool } from './baseTool';
 
 type MockRecord = {
   id: string;
@@ -62,7 +62,7 @@ const validateRecord = (id: string) => {
   };
 };
 
-export const updateMockRecordTool = tool(
+export const updateMockRecordTool = createTrackedTool(
   async (payload: { id?: string; title: string; summary: string; tags: string[] }) => {
     await new Promise((resolve) => setTimeout(resolve, 400));
     const record = updateRecord(payload);
@@ -83,7 +83,7 @@ export const updateMockRecordTool = tool(
   }
 );
 
-export const validateMockRecordTool = tool(
+export const validateMockRecordTool = createTrackedTool(
   async ({ id }: { id: string }) => {
     await new Promise((resolve) => setTimeout(resolve, 300));
     const result = validateRecord(id);
@@ -98,7 +98,7 @@ export const validateMockRecordTool = tool(
   }
 );
 
-export const updateAndValidateRecordTool = tool(
+export const updateAndValidateRecordTool = createTrackedTool(
   async (payload: { id?: string; title: string; summary: string; tags: string[] }) => {
     await new Promise((resolve) => setTimeout(resolve, 400));
     const record = updateRecord(payload);

@@ -9,6 +9,14 @@ export interface Message {
   timestamp: Date
 }
 
+interface ToolCall {
+  id: string
+  name: string
+  status: 'started' | 'completed' | 'failed'
+  startedAt: string
+  endedAt?: string
+}
+
 interface ChatProps {
   onSendMessage?: (message: string) => void
   initialMessages?: Message[]
@@ -16,6 +24,7 @@ interface ChatProps {
   agentId?: string
   sessionId?: string
   onMessagesChange?: (messages: Message[]) => void
+  showToolCalls?: boolean
 }
 
 const Chat: React.FC<ChatProps> = ({
@@ -24,11 +33,13 @@ const Chat: React.FC<ChatProps> = ({
   apiPath = '/api/agent',
   agentId,
   sessionId,
-  onMessagesChange
+  onMessagesChange,
+  showToolCalls = true
 }) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [toolCalls, setToolCalls] = useState<ToolCall[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const sessionIdRef = useRef(
@@ -57,6 +68,40 @@ const Chat: React.FC<ChatProps> = ({
       onMessagesChangeRef.current(messages)
     }
   }, [messages])
+
+  useEffect(() => {
+    if (!showToolCalls) {
+      return
+    }
+
+    let isActive = true
+
+    const fetchToolCalls = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'
+        const response = await fetch(
+          `${baseUrl}${apiPath}/tool-calls?sessionId=${sessionIdRef.current}`
+        )
+        if (!response.ok) {
+          return
+        }
+        const data = (await response.json()) as { toolCalls?: ToolCall[] }
+        if (isActive) {
+          setToolCalls(data.toolCalls ?? [])
+        }
+      } catch (error) {
+        // Ignore polling failures to avoid noisy UI.
+      }
+    }
+
+    fetchToolCalls()
+    const intervalId = window.setInterval(fetchToolCalls, 1000)
+
+    return () => {
+      isActive = false
+      window.clearInterval(intervalId)
+    }
+  }, [apiPath, showToolCalls])
 
   const handleSend = async () => {
     if (!inputValue.trim() || isLoading) return
@@ -158,6 +203,29 @@ const Chat: React.FC<ChatProps> = ({
         )}
         <div ref={messagesEndRef} />
       </div>
+      {showToolCalls && (
+        <div className="chat-tool-calls">
+          <div className="chat-tool-calls-header">
+            <span>Tool calls</span>
+            <span className="chat-tool-calls-live">Live</span>
+          </div>
+          {toolCalls.length === 0 ? (
+            <div className="chat-tool-calls-empty">No tool calls yet.</div>
+          ) : (
+            <ul className="chat-tool-calls-list">
+              {toolCalls.slice(-6).reverse().map((call) => (
+                <li
+                  key={call.id}
+                  className={`chat-tool-call chat-tool-call-${call.status}`}
+                >
+                  <span className="chat-tool-call-name">{call.name}</span>
+                  <span className="chat-tool-call-status">{call.status}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
       <div className="chat-input-container">
         <input
           ref={inputRef}

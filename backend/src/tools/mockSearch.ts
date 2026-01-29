@@ -1,5 +1,5 @@
-import { tool } from 'langchain';
 import { z } from 'zod';
+import { createTrackedTool } from './baseTool';
 
 const MOCK_RECORDS = [
   {
@@ -22,7 +22,7 @@ const MOCK_RECORDS = [
   }
 ];
 
-export const mockSearchTool = tool(
+export const mockSearchTool = createTrackedTool(
   async ({ query, numberOfResults }: { query: string, numberOfResults: number }) => {
     await new Promise((resolve) => setTimeout(resolve, 650));
     const normalized = query.toLowerCase();
