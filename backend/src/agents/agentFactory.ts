@@ -7,12 +7,10 @@ type AgentOptions = Parameters<typeof createAgent>[0];
 type AgentOverrides = Pick<AgentOptions, 'tools' | 'systemPrompt'>;
 
 const buildAgent = (overrides: Partial<AgentOverrides> = {}) => {
-  const ollamaModel = process.env.OLLAMA_MODEL || 'gpt-oss:20b';
-  process.env.OLLAMA_BASE_URL =
-    process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434';
+  const anthropicModel = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
 
   return createAgent({
-    model: `ollama:${ollamaModel}`,
+    model: `anthropic:${anthropicModel}`,
     tools: overrides.tools ?? SLIDE_02_TOOLS,
     systemPrompt: overrides.systemPrompt ?? SLIDE_02_SYSTEM_PROMPT
   });

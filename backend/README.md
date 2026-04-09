@@ -26,16 +26,12 @@ npm start
 
 ## Environment
 
-Set the following environment variables to use Ollama locally:
+Set the following environment variables to use Anthropic:
 
-- `OLLAMA_BASE_URL` - Ollama host (defaults to `http://127.0.0.1:11434`)
-- `OLLAMA_MODEL` - Model name to run (defaults to `gpt-oss:20b`)
+- `ANTHROPIC_API_KEY` - Your Anthropic API key
+- `ANTHROPIC_MODEL` - Model name (defaults to `claude-sonnet-4-6`)
 
-Then pull the model before starting the backend:
-
-```bash
-ollama pull gpt-oss:20b
-```
+The backend uses Anthropic Sonnet 4.6 through the Anthropic API.
 
 ## Endpoints
 
