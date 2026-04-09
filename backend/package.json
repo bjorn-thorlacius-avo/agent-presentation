@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@langchain/google-vertexai": "^2.1.13",
+    "@langchain/core": "^1.1.17",
+    "@langchain/ollama": "^1.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.18.2",

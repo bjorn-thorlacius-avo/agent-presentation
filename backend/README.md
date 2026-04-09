@@ -26,11 +26,16 @@ npm start
 
 ## Environment
 
-Set the following environment variables to use the Gemini model via Vertex AI:
+Set the following environment variables to use Ollama locally:
 
-- `GOOGLE_APPLICATION_CREDENTIALS` - Path to your Google service account JSON key
-- `GOOGLE_PROJECT_ID` - Your GCP project ID (recommended for service accounts)
-- `GOOGLE_LOCATION` - Vertex AI region (defaults to `us-central1`)
+- `OLLAMA_BASE_URL` - Ollama host (defaults to `http://127.0.0.1:11434`)
+- `OLLAMA_MODEL` - Model name to run (defaults to `gpt-oss:20b`)
+
+Then pull the model before starting the backend:
+
+```bash
+ollama pull gpt-oss:20b
+```
 
 ## Endpoints
 
