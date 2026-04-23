@@ -62,21 +62,22 @@ const ToolResponseNotificationChat = () => {
 
 const ToolResponseNotificationSlide: SlideDefinition = {
   title: 'Tool-driven responses',
-  subtitle: 'Technique 2: Respond inside the tool',
+  subtitle: 'Technique 2: Respond + abort inside the tool',
   content: <ToolResponseNotificationChat />,
   rightContent: (
     <div className="slide-right-content">
       <div>
         <p className="slide-right-lead">
-          Pass the HTTP response to a tool and let it finish the request.
+          Pass the HTTP response to a tool, let it finish the request, then abort the remaining agent run.
         </p>
       </div>
       <br />
       <div>
         <p className="slide-right-lead"><strong>Why this matters</strong></p>
         <ol className="slide-right-list">
-          <li>Input can be validated immediately on tool calls</li>
-          <li>No post-processing required</li>
+          <li>Input can be validated and returned immediately from the tool</li>
+          <li>No post-processing or fallback agent message required</li>
+          <li>Abort skips the final model turn, reducing latency and token usage</li>
         </ol>
       </div>
       <br />
@@ -84,7 +85,7 @@ const ToolResponseNotificationSlide: SlideDefinition = {
         <p className="slide-right-lead"><strong>Try this message</strong></p>
         <br />
         <p className="slide-right-caption">
-          Send a notification titled Hello with message Welcome!
+          Send a notification titled Hello with message Welcome!, no reply text.
         </p>
       </div>
     </div>

@@ -113,6 +113,9 @@ const MinimizeToolCallsSlide: SlideDefinition = {
         <p className="slide-right-caption">
           Click a topic to preload context and summarize without a tool call.
         </p>
+        <p className="slide-right-caption">
+          Or type a topic question manually to trigger `search_topics` only when prompt context is missing.
+        </p>
       </div>
     </div>
   ),

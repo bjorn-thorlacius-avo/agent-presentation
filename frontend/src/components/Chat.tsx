@@ -216,13 +216,16 @@ const Chat = forwardRef<ChatHandle, ChatProps>(({
       if (data.topics && onTopicsChange) {
         onTopicsChange(data.topics)
       }
-      const agentMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: data.reply || 'No response received from agent.',
-        sender: 'agent',
-        timestamp: new Date()
+      const trimmedReply = data.reply?.trim()
+      if (trimmedReply) {
+        const agentMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: trimmedReply,
+          sender: 'agent',
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, agentMessage])
       }
-      setMessages(prev => [...prev, agentMessage])
       if (onSendMessage) {
         onSendMessage(userMessage.text)
       }

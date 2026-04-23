@@ -20,6 +20,7 @@ const sessionTopics = new Map<string, SessionTopic[]>();
 type SessionContext = {
   sessionId: string;
   response?: Response;
+  abortController?: AbortController;
 };
 
 const sessionContext = new AsyncLocalStorage<SessionContext>();
@@ -104,3 +105,12 @@ export const runWithSessionContext = <T>(
 export const getCurrentSessionId = () => sessionContext.getStore()?.sessionId;
 
 export const getCurrentResponse = () => sessionContext.getStore()?.response;
+
+export const abortCurrentRun = (reason?: string) => {
+  const abortController = sessionContext.getStore()?.abortController;
+  if (!abortController || abortController.signal.aborted) {
+    return false;
+  }
+  abortController.abort(reason);
+  return true;
+};

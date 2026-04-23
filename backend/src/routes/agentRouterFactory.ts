@@ -50,6 +50,7 @@ export const createAgentRouter = (resolveAgent: AgentResolver) => {
     }
 
     try {
+      const abortController = new AbortController();
       const agent =
         agentId === 'slide-6' && topicContext
           ? createBaseAgent({
@@ -63,6 +64,7 @@ export const createAgentRouter = (resolveAgent: AgentResolver) => {
       const reply = await runWithSessionContext(
         {
           sessionId,
+          abortController,
           response:
             agentId === 'slide-4'
             || agentId === 'slide-5'
@@ -72,7 +74,10 @@ export const createAgentRouter = (resolveAgent: AgentResolver) => {
         async () => {
         appendSessionMessage(sessionId, { role: 'user', content: message });
         const history = getSessionMessages(sessionId);
-        const result = await agent.invoke({ messages: history });
+        const result = await agent.invoke(
+          { messages: history },
+          { signal: abortController.signal }
+        );
         const reply = extractReply(result) || 'No response generated.';
         appendSessionMessage(sessionId, { role: 'assistant', content: reply });
         return reply;
@@ -85,6 +90,17 @@ export const createAgentRouter = (resolveAgent: AgentResolver) => {
         res.json({ reply });
       }
     } catch (error) {
+      const isAbortError =
+        error instanceof Error
+        && (
+          error.name === 'AbortError'
+          || error.name === 'CancelledError'
+          || error.message.includes('aborted')
+          || error.message.includes('cancelled')
+        );
+      if (isAbortError && res.headersSent) {
+        return;
+      }
       const message =
         error instanceof Error ? error.message : 'Unexpected agent error.';
       if (!res.headersSent) {

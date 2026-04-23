@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createTrackedTool } from './baseTool';
-import { getCurrentResponse } from '../memory/sessionStore';
+import { abortCurrentRun, getCurrentResponse } from '../memory/sessionStore';
 
 const notificationSchema = z.object({
   message: z.string().min(1),
@@ -11,17 +11,18 @@ const notificationSchema = z.object({
 export const notificationTool = createTrackedTool(async (input) => {
   const response = getCurrentResponse();
   const title = input.title?.trim() || 'Notification';
-  const reply = input.reply?.trim() || `Notification sent: ${input.message}`;
+  const reply = input.reply?.trim();
   const canSend = Boolean(response && !response.headersSent);
 
   if (canSend) {
     response?.json({
-      reply,
+      ...(reply ? { reply } : {}),
       notification: {
         title,
         message: input.message
       }
     });
+    abortCurrentRun('notification response sent');
   }
 
   return {

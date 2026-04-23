@@ -18,6 +18,14 @@ const BaseAgentSetupSlide: SlideDefinition = {
         <li><strong>In-memory conversation history</strong> on the server</li>
         <li><strong>Markdown formatting</strong> on agent responses</li>
       </ul>
+      <br/>
+      <div>
+        <p className="slide-right-lead"><strong>Try this message</strong></p>
+        <br />
+        <p className="slide-right-caption">
+          Search for "langchain"
+        </p>
+      </div>
     </div>
   ),
   splitLayout: true
